@@ -1,9 +1,9 @@
 function checkPassword(password) {
   if(password.length>=4 && (password.includes('-') || password.includes('_'))) {
     console.log('Пароль надёжный');
-    return;
+  } else {
+    console.log('Пароль недостаточно надёжный');
   }
-  console.log('Пароль недостаточно надёжный');
 }
 
 
