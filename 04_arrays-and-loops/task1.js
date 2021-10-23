@@ -4,16 +4,17 @@
 
 function generator(n, m, count) {
   let min = Math.min(n, m);
-  let diff = Math.abs(n - m);
+  let max = Math.max(n, m);
+  let diff = Math.abs(min - (max + 1));
   let numbers = [];
-  for (let i=0; i<count; i++) {
+  for (let i = 0; i < count; i++) {
     numbers.push(min + (Math.floor(Math.random() * diff)));
   }
   console.log(numbers);
   console.log("\n\n\n");
 }
 
-generator(0,100,100);
-generator(2,5,50);
-generator(100,-5,70);
-generator(-3,-10,42);
+generator(0, 100, 100);
+generator(2, 5, 50);
+generator(100, -5, 70);
+generator(-3, -10, 42);

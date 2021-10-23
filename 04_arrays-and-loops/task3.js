@@ -3,19 +3,18 @@
 // }», где position— номер ячейки + 1. Если танк попал на мину, то нужно вывести сообщение« танк повреждён», если это 1 - й взрыв, и« танк уничтожен», если это 2 - й взрыв.После 2 - го взрыва танк считается уничтоженным и прекращает движение.
 
 
-function checkRoad(roadMines){
-  let minesPassed=0;
+function checkRoad(roadMines) {
+  let minesPassed = 0;
   for (mine in roadMines) {
     console.log(`танк переместился на ${parseInt(mine)+1}`);
-    if (roadMines[mine]){
+    if (roadMines[mine]) {
       minesPassed++;
-      if (minesPassed==1) console.log("танк повреждён");
-      if (minesPassed==2) {
+      if (minesPassed === 1) console.log("танк повреждён");
+      if (minesPassed === 2) {
         console.log("танк уничтожен");
         break;
       }
     }
-
   }
 }
 
