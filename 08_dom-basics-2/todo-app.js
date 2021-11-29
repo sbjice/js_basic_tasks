@@ -157,10 +157,17 @@
         //но добавить на страницу нам нужно только форму
         container.append(todoItemForm.form);
         container.append(todoList);
-        //добавление заданий из localStorage;
-        addTasksFromArray(parseTasksFromPageFromLocalStorage(title), todoList, title);
-        //добавление переданных изначально заданий
-        addTasksFromArray(initialList, todoList, title);
+        let tasksFromLocalStorage = parseTasksFromPageFromLocalStorage(title);
+        if(!tasksFromLocalStorage.length){
+            //добавление переданных изначально заданий
+            console.log(initialList);
+            if(initialList){
+                addTasksFromArray(initialList, todoList, title);
+            }
+        }else{
+            //добавление заданий из localStorage;
+            addTasksFromArray(parseTasksFromPageFromLocalStorage(title), todoList, title);
+        }
         //событие submit есть только у формы
         todoItemForm.form.addEventListener('submit', function (e) {
             //отключаем поведение формы по умолчанию
