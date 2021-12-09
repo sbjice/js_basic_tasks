@@ -12,8 +12,8 @@
     // do {
     //   gridLength = parseInt(prompt('Enter even number between 2 and 10: '));
     // } while (!gridLength || ((gridLength % 2) != 0));
-    gridLength = parseInt(prompt('Enter even number between 2 and 10: '));
-    if(!gridLength || ((gridLength % 2) != 0)) gridLength = 4;
+    gridLength = parseInt(prompt('Кол-во карточек по вертикали/горизонтали:'));
+    if(!gridLength || ((gridLength % 2) != 0) || gridLength > 10) gridLength = 4;
     return gridLength;
   }
 
@@ -83,14 +83,23 @@
     cell.opened ? cell.element.textContent = cell.value : cell.element.textContent = "";
   };
 
+  function disableAllCells(cells){
+    cells.forEach(cell=>{
+      cell.element.textContent = cell.value;
+      cell.element.classList.remove('bg-primary', 'bg-warning', 'bg-success');
+      cell.element.classList.add('bg-danger');
+      cell.disabled = true;
+    });
+  }
+
   function startGame(containerSelector, titleString = 'Pairs Game'){
     const container = setUpContainer(containerSelector);
     const gridLength = getGridLength();
     const title = createTitle(titleString);
     container.append(title);
     const shuffledPairs = shuffle(generatePairs(gridLength));
-    let cells = createGrid(container, gridLength, ['col-auto', 'bg-primary', 'mr-1', 'mb-1', 'border', 'border-primary', 'rounded-circle', 'align-items-center', 'justify-content-center', 'd-flex']);
-    let combinedCells = combineCellsWithValues(cells, shuffledPairs);
+    const cells = createGrid(container, gridLength, ['col-auto', 'bg-primary', 'mr-1', 'mb-1', 'border', 'border-primary', 'rounded', 'align-items-center', 'justify-content-center', 'd-flex']);
+    const combinedCells = combineCellsWithValues(cells, shuffledPairs);
     let timerID = null;
     combinedCells.forEach(cell => {
       cell.element.addEventListener('click', (e) => {
@@ -103,6 +112,7 @@
             cell.element.classList.remove('bg-primary', 'bg-warning');
             item.element.classList.add('bg-success');
             cell.element.classList.add('bg-success');
+            break;
           }
           else if (item!==cell && item.value !== cell.value && item.opened && cell.opened && !cell.disabled && !item.disabled){
             setTimeout(()=>{
@@ -112,21 +122,28 @@
             break;
           }
         }
-        if(combinedCells.every(cell => cell.disabled)) {
+        if(combinedCells.every(cell => cell.disabled && cell.element.classList.contains('bg-success'))) {
           clearTimeout(timerID);
           alert('You Won!');
+          let buttonWrapper = document.createElement('div');  //нужен для правильной стилизации кнопки bootstrap'ом
+          let button = document.createElement('button');
+          buttonWrapper.classList.add('input-group-append');  //спозиционирует содержащиеся в нем элементы справа от элементов для ввода
+          button.classList.add('btn', 'btn-primary','d-flex','rounded', 'align-items-center', 'justify-content-center'); //стили bootstrap'а, нужные для корректного отображения кнопки
+          button.textContent = 'Сыграть ещё раз';
+          button.addEventListener('click',()=>{
+            container.innerHTML = '';
+            clearTimeout(timerID);
+            startGame(container,'Pairs Game');
+          });
+          buttonWrapper.append(button);   //кладем кнопку в обертку
+          container.append(buttonWrapper);
         }
-      })
+      });
 
     });
 
     timerID = setTimeout(()=>{
-      combinedCells.forEach(cell=>{
-        cell.element.textContent = cell.value;
-        cell.element.classList.remove('bg-primary', 'bg-warning', 'bg-success');
-        cell.element.classList.add('bg-danger');
-        cell.disabled = true;
-      });
+      disableAllCells(combinedCells);
       alert("You Lose!");
     }, 60000);
   }
