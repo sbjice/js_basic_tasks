@@ -337,7 +337,7 @@
         grade: '2 курс',
       });
 
-      window.localStorage.setItem('studentsData', JSON.stringify(studentsData));
+      // window.localStorage.setItem('studentsData', JSON.stringify(studentsData));
       appendDataRows(table.dataCellsDiv, table.sortsDiv, studentsData);
     });
   }
@@ -359,44 +359,6 @@
     return a[o] > b[o] ? dir : a[o] < b[o] ? -(dir) : 0;
   }).reduce((p, n) => p ? p : n, 0);
 
-  const studentsData = [{
-    'fullName': 'a b c',
-    'faculty': 'a',
-    'birthDate': '31.12.2000',
-    'age': '20 лет',
-    'studyYears': '2019-2023',
-    'learnStart': 2016,
-    'learnFinish': 2020,
-    'grade': '2 курс',
-  }, {
-    'fullName': 'ab b c',
-    'faculty': 'a',
-    'birthDate': '31.12.2000',
-    'age': '20 лет',
-    'studyYears': '2019-2023',
-    'learnStart': 2017,
-    'learnFinish': 2021,
-    'grade': '2 курс',
-  }, {
-    'fullName': 'a bb c',
-    'faculty': 'b',
-    'birthDate': '31.12.2000',
-    'age': '20 лет',
-    'studyYears': '2019-2023',
-    'learnStart': 2015,
-    'learnFinish': 2019,
-    'grade': '2 курс',
-  }, {
-    'fullName': 'a b c',
-    'faculty': 'z',
-    'birthDate': '31.12.2000',
-    'age': '20 лет',
-    'studyYears': '2019-2023',
-    'learnStart': 2018,
-    'learnFinish': 2022,
-    'grade': '2 курс',
-  }];
-  const sorts = [];
 
   function getData (data){
     let sData = data;
@@ -405,17 +367,56 @@
     }
   }
 
+  let studentsData = [];
+  const sorts = [];
+
   // Основная функция для работы приложения
   function startApp(selector, title) {
     const container = createContainer(selector);
     const form = createForm();
     const table = createDataTable();
+
+    studentsData = [{
+      'fullName': 'a b c',
+      'faculty': 'a',
+      'birthDate': '31.12.2000',
+      'age': '20 лет',
+      'studyYears': '2019-2023',
+      'learnStart': 2016,
+      'learnFinish': 2020,
+      'grade': '2 курс',
+    }, {
+      'fullName': 'ab b c',
+      'faculty': 'a',
+      'birthDate': '31.12.2000',
+      'age': '20 лет',
+      'studyYears': '2019-2023',
+      'learnStart': 2017,
+      'learnFinish': 2021,
+      'grade': '2 курс',
+    }, {
+      'fullName': 'a bb c',
+      'faculty': 'b',
+      'birthDate': '31.12.2000',
+      'age': '20 лет',
+      'studyYears': '2019-2023',
+      'learnStart': 2015,
+      'learnFinish': 2019,
+      'grade': '2 курс',
+    }, {
+      'fullName': 'a b c',
+      'faculty': 'z',
+      'birthDate': '31.12.2000',
+      'age': '20 лет',
+      'studyYears': '2019-2023',
+      'learnStart': 2018,
+      'learnFinish': 2022,
+      'grade': '2 курс',
+    }];
+
     container.append(createTitle(title));
     container.append(form.studentForm);
     container.append(table.tableDiv);
-    // getStudentsData = getData(studentsData);
-
-    window.localStorage.setItem('studentsData', JSON.stringify(studentsData));
 
     appendDataRows(table.dataCellsDiv, table.sortsDiv, studentsData);
 
@@ -427,7 +428,51 @@
     let learnFinishSort = configSort(table.sorts.learnFinishSortDiv, 'learnFinish');
     sorts.push(nameSort,facultySort,learnStartSort,learnFinishSort);
 
-    configAllSorts(table.dataCellsDiv, table.sortsDiv, appendDataRows);
+    sortsObject = {
+      studentsData: studentsData,
+      elements: sorts,
+      fieldsForSort: [],
+      configElements: function(appendFunction, dataCellsDiv, sortsDiv){
+        this.elements.forEach((currentValue, index, arr) => {
+          currentValue.element.addEventListener('click',(e)=>{
+            // let studentsData = JSON.parse(window.localStorage.getItem('studentsData'));
+
+            if (currentValue.sortState === '') {
+              currentValue.sortState = '+'; // ascending
+              e.target.classList.remove('bg-info');
+              e.target.classList.add('bg-success');
+            } else if (currentValue.sortState === '+') {
+              currentValue.sortState = '-'; // descending
+              e.target.classList.remove('bg-success');
+              e.target.classList.add('bg-warning');
+            } else if (currentValue.sortState === '-') {
+              currentValue.sortState = ''; //no sort
+              e.target.classList.remove('bg-warning');
+              e.target.classList.add('bg-info');
+            }
+            this.fieldsForSort = [];
+            arr.forEach((obj) => {
+              if(obj.sortState) {
+                this.fieldsForSort.push(obj.sortState+obj.propName);
+              }
+            });
+            console.log(this.fieldsForSort);
+            let arrayToSort = this.studentsData.splice(0);
+            let sortedArray = arrayToSort.sort(fieldSorter(this.fieldsForSort));
+            if(this.fieldsForSort){
+              appendFunction(dataCellsDiv, sortsDiv, sortedArray);
+            } else {
+              appendFunction(dataCellsDiv, sortsDiv, this.studentsData);
+            }
+          });
+        });
+      }
+    }
+    sortsObject.configElements(appendDataRows, table.dataCellsDiv, table.sortsDiv);
+
+
+
+    // configAllSorts(table.dataCellsDiv, table.sortsDiv, appendDataRows);
   }
 
   //Реализовать сортировку - сделано
