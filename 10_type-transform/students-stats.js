@@ -268,7 +268,7 @@
       });
     }
   }
-
+  // Возвращает объект элемента сортировки с состоянием сортировки и именем свойства сортировки
   function configSort(element, propName) {
     return {
       element,
@@ -276,107 +276,9 @@
       propName,
     }
   }
-
-  function configAllSorts(
-    dataCellsDiv, sortsDiv,
-    appendFunction
-    ) {
-    let sortableFields = [];
-    sorts.forEach((currentValue, index, arr) => {
-      currentValue.element.addEventListener('click',(e)=>{
-        let studentsData = JSON.parse(window.localStorage.getItem('studentsData'));
-
-        if (currentValue.sortState === '') {
-          currentValue.sortState = '+'; // ascending
-          e.target.classList.remove('bg-info');
-          e.target.classList.add('bg-success');
-        } else if (currentValue.sortState === '+') {
-          currentValue.sortState = '-'; // descending
-          e.target.classList.remove('bg-success');
-          e.target.classList.add('bg-warning');
-        } else if (currentValue.sortState === '-') {
-          currentValue.sortState = ''; //no sort
-          e.target.classList.remove('bg-warning');
-          e.target.classList.add('bg-info');
-        }
-        sortableFields = [];
-        arr.forEach((obj) => {
-          if(obj.sortState) {
-            sortableFields.push(obj.sortState+obj.propName);
-          }
-        });
-        console.log(sortableFields);
-        let arrayToSort = studentsData.splice(0);
-        let sortedArray = arrayToSort.sort(fieldSorter(sortableFields))
-        if(sortableFields){
-          appendFunction(dataCellsDiv, sortsDiv, sortedArray);
-        } else {
-          appendFunction(dataCellsDiv, sortsDiv, studentsData);
-        }
-      });
-    });
-  }
-
-  function configForm(form, studentsData) {
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-
-      // let studentsData = JSON.parse(window.localStorage.getItem('studentsData'));
-      studentsData.push({
-        name: form.nameInput.value,
-        surname: form.surnameInput.value,
-        fathername: form.fathernameInput.value,
-        faculty: form.facultyInput.value,
-        birthDate: form.birthDateInput.value,
-        learnStart: parseInt(form.learnStartInput.value),
-        learnFinish: parseInt(form.learnStartInput.value) + 4,
-
-        fullName: form.nameInput.value + ' ' + form.surnameInput.value + ' ' + form.fathernameInput.value,
-        age: '20 лет',
-        studyYears: '2019-2023',
-        grade: '2 курс',
-      });
-
-      // window.localStorage.setItem('studentsData', JSON.stringify(studentsData));
-      appendDataRows(table.dataCellsDiv, table.sortsDiv, studentsData);
-    });
-  }
-
-  //Доработать
-  const fieldSorter = (fields) => (a, b) => fields.map(o => {
-    // Зеленый - по возрастанию
-    // Желтый - по убыванию
-    // Лазурный - без сортировки
-    let dir = 0;
-    if (o[0] === '+') {
-      dir = 1;
-      o = o.substring(1);
-    }
-    if (o[0] === '-') {
-      dir = -1;
-      o = o.substring(1);
-    }
-    return a[o] > b[o] ? dir : a[o] < b[o] ? -(dir) : 0;
-  }).reduce((p, n) => p ? p : n, 0);
-
-
-  function getData (data){
-    let sData = data;
-    return () => {
-      return sData;
-    }
-  }
-
-  let studentsData = [];
-  const sorts = [];
-
-  // Основная функция для работы приложения
-  function startApp(selector, title) {
-    const container = createContainer(selector);
-    const form = createForm();
-    const table = createDataTable();
-
-    studentsData = [{
+  // Возвращает массив данных для первичного заполнения страницы
+  function getDummyData(){
+    return [{
       'fullName': 'a b c',
       'faculty': 'a',
       'birthDate': '31.12.2000',
@@ -413,30 +315,76 @@
       'learnFinish': 2022,
       'grade': '2 курс',
     }];
+  }
+  // Функция сортировки по нескольким полям
+  const fieldSorter = (fields) => (a, b) => fields.map(o => {
+    // Зеленый цвет дива - сортировка по возрастанию
+    // Желтый цвет дива - сортировка по убыванию
+    // Лазурный цвет дива - без сортировки
+    let dir = 0;
+    if (o[0] === '+') {
+      dir = 1;
+      o = o.substring(1);
+    }
+    if (o[0] === '-') {
+      dir = -1;
+      o = o.substring(1);
+    }
+    return a[o] > b[o] ? dir : a[o] < b[o] ? -(dir) : 0;
+  }).reduce((p, n) => p ? p : n, 0);
 
+  // Основная функция для работы приложения
+  function startApp(selector, title) {
+    const container = createContainer(selector);
+    const form = createForm();
+    const table = createDataTable();
     container.append(createTitle(title));
     container.append(form.studentForm);
     container.append(table.tableDiv);
 
+    let studentsData = getDummyData();
+
     appendDataRows(table.dataCellsDiv, table.sortsDiv, studentsData);
 
-    configForm(form.studentForm, studentsData);
+    formObject = {
+      form: form,
+      configForm: function(studentsData) {
+        let controls = this.form;
+        this.form.studentForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          studentsData.push({
+            name: controls.nameInput.value,
+            surname: controls.surnameInput.value,
+            fathername: controls.fathernameInput.value,
+            faculty: controls.facultyInput.value,
+            birthDate: controls.birthDateInput.value,
+            learnStart: parseInt(controls.learnStartInput.value),
+            learnFinish: parseInt(controls.learnStartInput.value) + 4,
 
+            fullName: controls.nameInput.value + ' ' + controls.surnameInput.value + ' ' + controls.fathernameInput.value,
+            age: '20 лет',
+            studyYears: '2019-2023',
+            grade: '2 курс',
+          });
+          appendDataRows(table.dataCellsDiv, table.sortsDiv, studentsData);
+        });
+      }
+    }
+    formObject.configForm(studentsData);
+
+    let sortFiels = [];
+    const sorts = [];
     let nameSort = configSort(table.sorts.nameSortDiv, 'fullName');
     let facultySort = configSort(table.sorts.facultySortDiv, 'faculty');
     let learnStartSort = configSort(table.sorts.learnStartSortDiv, 'learnStart',);
     let learnFinishSort = configSort(table.sorts.learnFinishSortDiv, 'learnFinish');
     sorts.push(nameSort,facultySort,learnStartSort,learnFinishSort);
-
     sortsObject = {
       studentsData: studentsData,
       elements: sorts,
-      fieldsForSort: [],
       configElements: function(appendFunction, dataCellsDiv, sortsDiv){
         this.elements.forEach((currentValue, index, arr) => {
           currentValue.element.addEventListener('click',(e)=>{
-            // let studentsData = JSON.parse(window.localStorage.getItem('studentsData'));
-
             if (currentValue.sortState === '') {
               currentValue.sortState = '+'; // ascending
               e.target.classList.remove('bg-info');
@@ -450,19 +398,19 @@
               e.target.classList.remove('bg-warning');
               e.target.classList.add('bg-info');
             }
-            this.fieldsForSort = [];
+            sortFiels = [];
             arr.forEach((obj) => {
               if(obj.sortState) {
-                this.fieldsForSort.push(obj.sortState+obj.propName);
+                sortFiels.push(obj.sortState+obj.propName);
               }
             });
-            console.log(this.fieldsForSort);
-            let arrayToSort = this.studentsData.splice(0);
-            let sortedArray = arrayToSort.sort(fieldSorter(this.fieldsForSort));
-            if(this.fieldsForSort){
+            console.log(sortFiels);
+            let arrayToSort = studentsData.slice(0);
+            let sortedArray = arrayToSort.sort(fieldSorter(sortFiels));
+            if(sortFiels){
               appendFunction(dataCellsDiv, sortsDiv, sortedArray);
             } else {
-              appendFunction(dataCellsDiv, sortsDiv, this.studentsData);
+              appendFunction(dataCellsDiv, sortsDiv, studentsData);
             }
           });
         });
@@ -470,18 +418,14 @@
     }
     sortsObject.configElements(appendDataRows, table.dataCellsDiv, table.sortsDiv);
 
-
-
-    // configAllSorts(table.dataCellsDiv, table.sortsDiv, appendDataRows);
   }
 
-  //Реализовать сортировку - сделано
-  // Написать функцию конфигурирования фильтров и сортировщиков - сделано
-  //Разобраться как работать с датами
-  //Написать функцию валидации данных формы
-  //Написать обработку данных о студенте после ввода данных и между вставкой их в таблицу
-  //Написать функцию сортировки данных по данным с фильтров и сортировщиков, написать универсальный сортировщик для комбинации условий
+  // Реализовать сортировку - сделано
+  // Написать функцию конфигурирования сортировщиков - сделано
+  // Разобраться как работать с датами
+  // Написать функцию валидации данных формы
+  // Написать обработку данных о студенте после ввода данных и между вставкой их в таблицу
+  // Написать функцию сортировки данных по данным с фильтров и сортировщиков, написать универсальный сортировщик для комбинации условий
 
   window.startApp = startApp;
-  window.getData = getData;
 })();
