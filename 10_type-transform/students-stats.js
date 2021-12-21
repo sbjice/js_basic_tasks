@@ -237,10 +237,11 @@
   }
   // Добавление записей в таблицу
   function appendDataRows(dataTable, sortsRow, data) {
+    let innerData = data.slice();
     dataTable.innerHTML = '';
     dataTable.append(sortsRow);
-    if (data) {
-      data.forEach((item) => {
+    if (innerData) {
+      innerData.forEach((item) => {
         const dataRowDiv = document.createElement('div');
         dataRowDiv.classList.add('d-flex', 'p-0');
 
@@ -268,6 +269,26 @@
       });
     }
   }
+  // Приготовление данных для отображения на странице
+  function prepareDataForRender(filters, data) {
+    // let data.slice().sort(fieldSorter(sortFields));
+    let filteredData = data.slice();
+    filters.forEach(item => {
+      filteredData = filteredData.filter(dataItem => {
+        if (item['propName'] === 'learnStart') return dataItem[item['propName']] === parseInt(item['filterValue']);
+        return dataItem[item['propName']].toLowerCase().includes(item['filterValue'].toLowerCase());
+      });
+    })
+    return filteredData;
+  }
+  // Возвращает объект элемента фильтра с полем фильтрации и значением поля, по которому должна происходить фильтрация
+  function configFilter(element, propName) {
+    return {
+      element,
+      'filterValue': '',
+      propName,
+    }
+  }
   // Возвращает объект элемента сортировки с состоянием сортировки и именем свойства сортировки
   function configSort(element, propName) {
     return {
@@ -279,7 +300,7 @@
   // Возвращает массив данных для первичного заполнения страницы
   function getDummyData(){
     return [{
-      'fullName': 'a b c',
+      'fullName': 'a bra c',
       'faculty': 'a',
       'birthDate': '31.12.2000',
       'age': '20 лет',
@@ -288,7 +309,7 @@
       'learnFinish': 2020,
       'grade': '2 курс',
     }, {
-      'fullName': 'ab b c',
+      'fullName': 'abb b c',
       'faculty': 'a',
       'birthDate': '31.12.2000',
       'age': '20 лет',
@@ -306,7 +327,7 @@
       'learnFinish': 2019,
       'grade': '2 курс',
     }, {
-      'fullName': 'a b c',
+      'fullName': 'a b cuda',
       'faculty': 'z',
       'birthDate': '31.12.2000',
       'age': '20 лет',
@@ -317,21 +338,23 @@
     }];
   }
   // Функция сортировки по нескольким полям
-  const fieldSorter = (fields) => (a, b) => fields.map(o => {
-    // Зеленый цвет дива - сортировка по возрастанию
-    // Желтый цвет дива - сортировка по убыванию
-    // Лазурный цвет дива - без сортировки
-    let dir = 0;
-    if (o[0] === '+') {
-      dir = 1;
-      o = o.substring(1);
-    }
-    if (o[0] === '-') {
-      dir = -1;
-      o = o.substring(1);
-    }
-    return a[o] > b[o] ? dir : a[o] < b[o] ? -(dir) : 0;
-  }).reduce((p, n) => p ? p : n, 0);
+  function fieldSorter (fields) {
+    return (a, b) => fields.map(o => {
+      // Зеленый цвет дива - сортировка по возрастанию
+      // Желтый цвет дива - сортировка по убыванию
+      // Лазурный цвет дива - без сортировки
+      let dir = 0;
+      if (o[0] === '+') {
+        dir = 1;
+        o = o.substring(1);
+      }
+      if (o[0] === '-') {
+        dir = -1;
+        o = o.substring(1);
+      }
+      return a[o] > b[o] ? dir : a[o] < b[o] ? -(dir) : 0;
+    }).reduce((p, n) => p ? p : n, 0);
+  }
 
   // Основная функция для работы приложения
   function startApp(selector, title) {
@@ -372,7 +395,7 @@
     }
     formObject.configForm(studentsData);
 
-    let sortFiels = [];
+    let sortFields = [];
     const sorts = [];
     let nameSort = configSort(table.sorts.nameSortDiv, 'fullName');
     let facultySort = configSort(table.sorts.facultySortDiv, 'faculty');
@@ -380,7 +403,6 @@
     let learnFinishSort = configSort(table.sorts.learnFinishSortDiv, 'learnFinish');
     sorts.push(nameSort,facultySort,learnStartSort,learnFinishSort);
     sortsObject = {
-      studentsData: studentsData,
       elements: sorts,
       configElements: function(appendFunction, dataCellsDiv, sortsDiv){
         this.elements.forEach((currentValue, index, arr) => {
@@ -398,25 +420,56 @@
               e.target.classList.remove('bg-warning');
               e.target.classList.add('bg-info');
             }
-            sortFiels = [];
+            sortFields = [];
             arr.forEach((obj) => {
               if(obj.sortState) {
-                sortFiels.push(obj.sortState+obj.propName);
+                sortFields.push(obj.sortState+obj.propName);
               }
             });
-            console.log(sortFiels);
-            let arrayToSort = studentsData.slice(0);
-            let sortedArray = arrayToSort.sort(fieldSorter(sortFiels));
-            if(sortFiels){
-              appendFunction(dataCellsDiv, sortsDiv, sortedArray);
+            console.log(sortFields);
+            if(sortFields){
+              appendFunction(dataCellsDiv, sortsDiv, studentsData.slice().sort(fieldSorter(sortFields)));
             } else {
               appendFunction(dataCellsDiv, sortsDiv, studentsData);
             }
+            // дописать функцию таким образом чтобы можно было в нее передавать
+            // массив с направлениями сортировок и и массив с фильтрами
+            // написать ф-ю обработки данных, которая будет сортировать и фильтровать данные и вызывать ее здесь
+            // appendFunction(dataCellsDiv, sortsDiv, studentsData);
           });
         });
       }
     }
     sortsObject.configElements(appendDataRows, table.dataCellsDiv, table.sortsDiv);
+
+    let filterFields = [];
+    let filters = [];
+    let nameFilter = configFilter(table.filters.nameFilterInput, 'fullName');
+    let facultyFilter = configFilter(table.filters.facultyFilterInput, 'faculty');
+    let birthDateFilter = configFilter(table.filters.birthDateFilterInput, 'birthDate');
+    let learnStartFilter = configFilter(table.filters.learnStartFilterInput, 'learnStart');
+    filters.push(nameFilter,facultyFilter,birthDateFilter,learnStartFilter);
+    filtersObject = {
+      elements: filters,
+      configElements: function(){
+        this.elements.forEach((currentValue, index, arr) => {
+          currentValue.element.addEventListener('input',(e)=>{
+            currentValue.filterValue = currentValue.element.value;
+            filterFields = [];
+            arr.forEach((obj) => {
+              if(obj.filterValue) {
+                filterFields.push(obj);
+              }
+            });
+            console.log(filterFields);
+            // console.log(prepareDataForRender(filterFields, studentsData));
+
+            appendDataRows(table.dataCellsDiv, table.sortsDiv, prepareDataForRender(filterFields, studentsData));
+          });
+        });
+      }
+    }
+    filtersObject.configElements();
 
   }
 
