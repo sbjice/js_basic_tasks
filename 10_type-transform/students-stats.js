@@ -183,6 +183,7 @@
     learnStartFilterSmall.textContent = 'Поле фильтрации по году поступления';
     learnStartFilterDiv.append(learnStartFilterInput, learnStartFilterSmall);
 
+
     filtersDiv.append(nameFilterDiv, facultyFilterDiv, birthDateFilterDiv, learnStartFilterDiv);
 
     // Шапка таблицы c возможность сортировки
@@ -221,8 +222,8 @@
       filters: {
         nameFilterInput,
         facultyFilterInput,
-        birthDateFilterInput,
         learnStartFilterInput,
+        birthDateFilterInput,
       },
       sorts: {
         nameSortDiv,
@@ -257,7 +258,7 @@
 
         const birthDateDiv = document.createElement('div');
         birthDateDiv.classList.add('form-control', 'table-primary', 'col-3');
-        birthDateDiv.textContent = item.learnStart;
+        birthDateDiv.textContent = item.birthDate;
         dataRowDiv.append(birthDateDiv);
 
         const learnStartDiv = document.createElement('div');
@@ -270,15 +271,19 @@
     }
   }
   // Приготовление данных для отображения на странице
-  function prepareDataForRender(filters, data) {
-    // let data.slice().sort(fieldSorter(sortFields));
+  function prepareDataForRender(data, filters, sorts) {
     let filteredData = data.slice();
-    filters.forEach(item => {
-      filteredData = filteredData.filter(dataItem => {
-        if (item['propName'] === 'learnStart') return dataItem[item['propName']] === parseInt(item['filterValue']);
-        return dataItem[item['propName']].toLowerCase().includes(item['filterValue'].toLowerCase());
-      });
-    })
+    if (filters) {
+      filters.forEach(item => {
+        filteredData = filteredData.filter(dataItem => {
+          if (item['propName'] === 'learnStart') return dataItem[item['propName']] === parseInt(item['filterValue']);
+          return dataItem[item['propName']].toLowerCase().includes(item['filterValue'].toLowerCase());
+        });
+      })
+    }
+    if (sorts) {
+      return filteredData.sort(fieldSorter(sorts));
+    }
     return filteredData;
   }
   // Возвращает объект элемента фильтра с полем фильтрации и значением поля, по которому должна происходить фильтрация
@@ -298,11 +303,11 @@
     }
   }
   // Возвращает массив данных для первичного заполнения страницы
-  function getDummyData(){
+  function getDummyData() {
     return [{
       'fullName': 'a bra c',
       'faculty': 'a',
-      'birthDate': '31.12.2000',
+      'birthDate': '2000-12-31',
       'age': '20 лет',
       'studyYears': '2019-2023',
       'learnStart': 2016,
@@ -311,7 +316,7 @@
     }, {
       'fullName': 'abb b c',
       'faculty': 'a',
-      'birthDate': '31.12.2000',
+      'birthDate': '1996-06-14',
       'age': '20 лет',
       'studyYears': '2019-2023',
       'learnStart': 2017,
@@ -320,7 +325,7 @@
     }, {
       'fullName': 'a bb c',
       'faculty': 'b',
-      'birthDate': '31.12.2000',
+      'birthDate': '1994-01-05',
       'age': '20 лет',
       'studyYears': '2019-2023',
       'learnStart': 2015,
@@ -329,20 +334,26 @@
     }, {
       'fullName': 'a b cuda',
       'faculty': 'z',
-      'birthDate': '31.12.2000',
+      'birthDate': '1995-11-15',
       'age': '20 лет',
       'studyYears': '2019-2023',
       'learnStart': 2018,
       'learnFinish': 2022,
       'grade': '2 курс',
+    }, {
+      'fullName': 'zumba rumba rubada',
+      'faculty': 'zabadee',
+      'birthDate': '1995-11-15',
+      'age': '20 лет',
+      'studyYears': '2019-2023',
+      'learnStart': 2017,
+      'learnFinish': 2021,
+      'grade': '2 курс',
     }];
   }
   // Функция сортировки по нескольким полям
-  function fieldSorter (fields) {
+  function fieldSorter(fields) {
     return (a, b) => fields.map(o => {
-      // Зеленый цвет дива - сортировка по возрастанию
-      // Желтый цвет дива - сортировка по убыванию
-      // Лазурный цвет дива - без сортировки
       let dir = 0;
       if (o[0] === '+') {
         dir = 1;
@@ -371,7 +382,7 @@
 
     formObject = {
       form: form,
-      configForm: function(studentsData) {
+      configForm: function (studentsData) {
         let controls = this.form;
         this.form.studentForm.addEventListener('submit', (e) => {
           e.preventDefault();
@@ -389,6 +400,13 @@
             studyYears: '2019-2023',
             grade: '2 курс',
           });
+          controls.nameInput.value = '';
+          controls.surnameInput.value = '';
+          controls.fathernameInput.value = '';
+          controls.facultyInput.value = '';
+          controls.birthDateInput.value = '';
+          controls.learnStartInput.value = '';
+          controls.learnStartInput.value = '';
           appendDataRows(table.dataCellsDiv, table.sortsDiv, studentsData);
         });
       }
@@ -399,14 +417,17 @@
     const sorts = [];
     let nameSort = configSort(table.sorts.nameSortDiv, 'fullName');
     let facultySort = configSort(table.sorts.facultySortDiv, 'faculty');
-    let learnStartSort = configSort(table.sorts.learnStartSortDiv, 'learnStart',);
+    let learnStartSort = configSort(table.sorts.learnStartSortDiv, 'learnStart', );
     let learnFinishSort = configSort(table.sorts.learnFinishSortDiv, 'learnFinish');
-    sorts.push(nameSort,facultySort,learnStartSort,learnFinishSort);
+    sorts.push(nameSort, facultySort, learnStartSort, learnFinishSort);
     sortsObject = {
       elements: sorts,
-      configElements: function(appendFunction, dataCellsDiv, sortsDiv){
+      configElements: function (appendFunction, dataCellsDiv, sortsDiv) {
         this.elements.forEach((currentValue, index, arr) => {
-          currentValue.element.addEventListener('click',(e)=>{
+          currentValue.element.addEventListener('click', (e) => {
+            // Зеленый ('bg-success') цвет дива - сортировка по возрастанию
+            // Желтый ('bg-warning') цвет дива - сортировка по убыванию
+            // Лазурный ('bg-info') цвет дива - без сортировки
             if (currentValue.sortState === '') {
               currentValue.sortState = '+'; // ascending
               e.target.classList.remove('bg-info');
@@ -422,16 +443,12 @@
             }
             sortFields = [];
             arr.forEach((obj) => {
-              if(obj.sortState) {
-                sortFields.push(obj.sortState+obj.propName);
+              if (obj.sortState) {
+                sortFields.push(obj.sortState + obj.propName);
               }
             });
             console.log(sortFields);
-            if(sortFields){
-              appendFunction(dataCellsDiv, sortsDiv, studentsData.slice().sort(fieldSorter(sortFields)));
-            } else {
-              appendFunction(dataCellsDiv, sortsDiv, studentsData);
-            }
+            appendDataRows(table.dataCellsDiv, table.sortsDiv, prepareDataForRender(studentsData, filterFields, sortFields));
             // дописать функцию таким образом чтобы можно было в нее передавать
             // массив с направлениями сортировок и и массив с фильтрами
             // написать ф-ю обработки данных, которая будет сортировать и фильтровать данные и вызывать ее здесь
@@ -448,23 +465,23 @@
     let facultyFilter = configFilter(table.filters.facultyFilterInput, 'faculty');
     let birthDateFilter = configFilter(table.filters.birthDateFilterInput, 'birthDate');
     let learnStartFilter = configFilter(table.filters.learnStartFilterInput, 'learnStart');
-    filters.push(nameFilter,facultyFilter,birthDateFilter,learnStartFilter);
+    filters.push(nameFilter, facultyFilter, birthDateFilter, learnStartFilter);
     filtersObject = {
       elements: filters,
-      configElements: function(){
+      configElements: function () {
         this.elements.forEach((currentValue, index, arr) => {
-          currentValue.element.addEventListener('input',(e)=>{
+          currentValue.element.addEventListener('input', (e) => {
             currentValue.filterValue = currentValue.element.value;
             filterFields = [];
             arr.forEach((obj) => {
-              if(obj.filterValue) {
+              if (obj.filterValue) {
                 filterFields.push(obj);
               }
             });
             console.log(filterFields);
             // console.log(prepareDataForRender(filterFields, studentsData));
 
-            appendDataRows(table.dataCellsDiv, table.sortsDiv, prepareDataForRender(filterFields, studentsData));
+            appendDataRows(table.dataCellsDiv, table.sortsDiv, prepareDataForRender(studentsData, filterFields, sortFields));
           });
         });
       }
@@ -475,10 +492,10 @@
 
   // Реализовать сортировку - сделано
   // Написать функцию конфигурирования сортировщиков - сделано
+  // Написать функцию сортировки данных по данным с фильтров и сортировщиков, написать универсальный сортировщик для комбинации условий - сделано
+  // Написать обработку данных о студенте после ввода данных и между вставкой их в таблицу
   // Разобраться как работать с датами
   // Написать функцию валидации данных формы
-  // Написать обработку данных о студенте после ввода данных и между вставкой их в таблицу
-  // Написать функцию сортировки данных по данным с фильтров и сортировщиков, написать универсальный сортировщик для комбинации условий
 
   window.startApp = startApp;
 })();
