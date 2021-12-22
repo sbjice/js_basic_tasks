@@ -21,7 +21,7 @@
 
     //Верхняя часть формы (фамилия, имя, отчество)
     const formTopDiv = document.createElement('div');
-    formTopDiv.classList.add('align-items-center', 'justify-content-center', 'd-flex', 'row', 'mb-3');
+    formTopDiv.classList.add('align-items-top', 'justify-content-center', 'd-flex', 'row', 'mb-3');
 
     const nameDiv = document.createElement('div');
     nameDiv.classList.add('d-flex', 'flex-column', 'col-4');
@@ -31,7 +31,7 @@
     nameInput.placeholder = 'Введите имя';
     const nameSmall = document.createElement('small');
     nameSmall.classList.add('form-text');
-    nameSmall.textContent = 'Поле для ввода имени';
+    // nameSmall.textContent = 'Поле для ввода имени';
     nameDiv.append(nameInput, nameSmall);
 
     const surnameDiv = document.createElement('div');
@@ -42,7 +42,7 @@
     surnameInput.placeholder = 'Введите фамилию';
     const surnameSmall = document.createElement('small');
     surnameSmall.classList.add('form-text');
-    surnameSmall.textContent = 'Поле для ввода фамилии';
+    // surnameSmall.textContent = 'Поле для ввода фамилии';
     surnameDiv.append(surnameInput, surnameSmall);
 
     const fathernameDiv = document.createElement('div');
@@ -53,7 +53,7 @@
     fathernameInput.placeholder = 'Введите отчество';
     const fathernameSmall = document.createElement('small');
     fathernameSmall.classList.add('form-text');
-    fathernameSmall.textContent = 'Поле для ввода отчества';
+    // fathernameSmall.textContent = 'Поле для ввода отчества';
     fathernameDiv.append(fathernameInput, fathernameSmall);
 
     formTopDiv.append(nameDiv, surnameDiv, fathernameDiv);
@@ -65,10 +65,10 @@
     const facultyInput = document.createElement('input');
     facultyInput.type = 'text';
     facultyInput.classList.add('form-control');
+    facultyInput.placeholder = 'Введите факультет';
     const facultySmall = document.createElement('small');
     facultySmall.classList.add('form-text');
-    facultySmall.textContent = 'Поле для ввода названия факультета';
-
+    // facultySmall.textContent = 'Поле для ввода названия факультета';
     formMiddleDiv.append(facultyInput, facultySmall);
 
     //Нижняя часть формы (дата рождения, год начала обучения, кнопка добавления студента)
@@ -80,9 +80,10 @@
     const birthDateInput = document.createElement('input');
     birthDateInput.type = 'date';
     birthDateInput.classList.add('form-control');
+    // birthDateInput.placeholder = 'Введите дату рождения';
     const birthDateSmall = document.createElement('small');
     birthDateSmall.classList.add('form-text');
-    birthDateSmall.textContent = 'Поле для ввода даты рождения';
+    // birthDateSmall.textContent = 'Поле для ввода даты рождения';
     birthDateDiv.append(birthDateInput, birthDateSmall);
 
     const learnStartDiv = document.createElement('div');
@@ -93,9 +94,10 @@
     learnStartInput.min = 1900;
     learnStartInput.step = 1;
     learnStartInput.classList.add('form-control');
+    learnStartInput.placeholder = 'Введите год поступления';
     const learnStartSmall = document.createElement('small');
     learnStartSmall.classList.add('form-text');
-    learnStartSmall.textContent = 'Поле для ввода года начала обучения';
+    // learnStartSmall.textContent = 'Поле для ввода года начала обучения';
     learnStartDiv.append(learnStartInput, learnStartSmall);
 
     const btnDiv = document.createElement('div');
@@ -161,16 +163,6 @@
     facultyFilterSmall.textContent = 'Поле фильтрации по факультету';
     facultyFilterDiv.append(facultyFilterInput, facultyFilterSmall);
 
-    const birthDateFilterDiv = document.createElement('div');
-    birthDateFilterDiv.classList.add('d-flex', 'flex-column', 'col-3', 'p-0');
-    const birthDateFilterInput = document.createElement('input');
-    birthDateFilterInput.type = 'date';
-    birthDateFilterInput.classList.add('form-control');
-    birthDateFilterInput.placeholder = 'Дата рождения';
-    const birthDateFilterSmall = document.createElement('small');
-    birthDateFilterSmall.classList.add('form-text', 'flex-wrap');
-    birthDateFilterSmall.textContent = 'Поле фильтрации по дате рождения';
-    birthDateFilterDiv.append(birthDateFilterInput, birthDateFilterSmall);
 
     const learnStartFilterDiv = document.createElement('div');
     learnStartFilterDiv.classList.add('d-flex', 'flex-column', 'col-3', 'p-0');
@@ -183,8 +175,19 @@
     learnStartFilterSmall.textContent = 'Поле фильтрации по году поступления';
     learnStartFilterDiv.append(learnStartFilterInput, learnStartFilterSmall);
 
+    const learnFinishFilterDiv = document.createElement('div');
+    learnFinishFilterDiv.classList.add('d-flex', 'flex-column', 'col-3', 'p-0');
+    const learnFinishFilterInput = document.createElement('input');
+    learnFinishFilterInput.type = 'number';
+    learnFinishFilterInput.classList.add('form-control');
+    learnFinishFilterInput.placeholder = 'Год выпуска';
+    const learnFinishFilterSmall = document.createElement('small');
+    learnFinishFilterSmall.classList.add('form-text', 'flex-wrap');
+    learnFinishFilterSmall.textContent = 'Поле фильтрации по году выпуска';
+    learnFinishFilterDiv.append(learnFinishFilterInput, learnFinishFilterSmall);
 
-    filtersDiv.append(nameFilterDiv, facultyFilterDiv, birthDateFilterDiv, learnStartFilterDiv);
+
+    filtersDiv.append(nameFilterDiv, facultyFilterDiv, learnStartFilterDiv, learnFinishFilterDiv);
 
     // Шапка таблицы c возможность сортировки
     const dataCellsDiv = document.createElement('div');
@@ -203,15 +206,16 @@
     facultySortDiv.textContent = 'Факультет';
     sortsDiv.append(facultySortDiv);
 
+    const birthDateSortDiv = document.createElement('div');
+    birthDateSortDiv.classList.add('form-control', 'table-primary', 'col-3', 'bg-info');
+    birthDateSortDiv.textContent = 'Дата рождения';
+    sortsDiv.append(birthDateSortDiv);
+
     const learnStartSortDiv = document.createElement('div');
     learnStartSortDiv.classList.add('form-control', 'table-primary', 'col-3', 'bg-info');
-    learnStartSortDiv.textContent = 'Год поступления';
+    learnStartSortDiv.textContent = 'Годы обучения';
     sortsDiv.append(learnStartSortDiv);
 
-    const learnFinishSortDiv = document.createElement('div');
-    learnFinishSortDiv.classList.add('form-control', 'table-primary', 'col-3', 'bg-info');
-    learnFinishSortDiv.textContent = 'Год окончания';
-    sortsDiv.append(learnFinishSortDiv);
 
     dataCellsDiv.append(sortsDiv);
 
@@ -222,14 +226,14 @@
       filters: {
         nameFilterInput,
         facultyFilterInput,
+        learnFinishFilterInput,
         learnStartFilterInput,
-        birthDateFilterInput,
       },
       sorts: {
         nameSortDiv,
         facultySortDiv,
+        birthDateSortDiv,
         learnStartSortDiv,
-        learnFinishSortDiv,
       },
       dataCellsDiv,
       filtersDiv,
@@ -244,26 +248,33 @@
     if (innerData) {
       innerData.forEach((item) => {
         const dataRowDiv = document.createElement('div');
-        dataRowDiv.classList.add('d-flex', 'p-0');
+        dataRowDiv.classList.add('d-flex', 'p-0', 'h-auto');
 
         const nameDiv = document.createElement('div');
-        nameDiv.classList.add('form-control', 'table-primary', 'col-3');
+        nameDiv.classList.add('form-control', 'table-primary', 'col-3', 'h-auto');
         nameDiv.textContent = item.fullName;
         dataRowDiv.append(nameDiv);
 
         const facultyDiv = document.createElement('div');
-        facultyDiv.classList.add('form-control', 'table-primary', 'col-3');
+        facultyDiv.classList.add('form-control', 'table-primary', 'col-3', 'h-auto');
         facultyDiv.textContent = item.faculty;
         dataRowDiv.append(facultyDiv);
 
         const birthDateDiv = document.createElement('div');
-        birthDateDiv.classList.add('form-control', 'table-primary', 'col-3');
-        birthDateDiv.textContent = item.birthDate;
+        birthDateDiv.classList.add('form-control', 'table-primary', 'col-3', 'h-auto');
+        let ageMod = item.age % 10;
+        let ageString =
+                        '(' + item.age + ' ' +
+                        ((ageMod) === 1 ? 'год' : (((ageMod) > 1 && (ageMod) < 5) ? 'года' : 'лет' )) +
+                        ')';
+        birthDateDiv.textContent = item.birthDate.split('-').reverse().join('.') + ' ' + ageString;
         dataRowDiv.append(birthDateDiv);
 
         const learnStartDiv = document.createElement('div');
-        learnStartDiv.classList.add('form-control', 'table-primary', 'col-3');
-        learnStartDiv.textContent = item.learnFinish;
+        learnStartDiv.classList.add('form-control', 'table-primary', 'col-3', 'h-auto');
+        learnStartDiv.textContent = item.learnStart + '-' + item.learnFinish +
+                                    ' (' +
+                                    (item.grade === 'finished' ? 'закончил)' : (item.grade + ' курс)'));
         dataRowDiv.append(learnStartDiv);
 
         dataTable.append(dataRowDiv);
@@ -308,47 +319,65 @@
       'fullName': 'a bra c',
       'faculty': 'a',
       'birthDate': '2000-12-31',
-      'age': '20 лет',
+      'age': '20',
       'studyYears': '2019-2023',
       'learnStart': 2016,
       'learnFinish': 2020,
-      'grade': '2 курс',
+      'grade': 'finished',
     }, {
       'fullName': 'abb b c',
       'faculty': 'a',
       'birthDate': '1996-06-14',
-      'age': '20 лет',
+      'age': '21',
       'studyYears': '2019-2023',
       'learnStart': 2017,
       'learnFinish': 2021,
-      'grade': '2 курс',
+      'grade': 'finished',
     }, {
       'fullName': 'a bb c',
       'faculty': 'b',
       'birthDate': '1994-01-05',
-      'age': '20 лет',
+      'age': '202',
       'studyYears': '2019-2023',
-      'learnStart': 2015,
-      'learnFinish': 2019,
-      'grade': '2 курс',
+      'learnStart': 2019,
+      'learnFinish': 2023,
+      'grade': '3',
     }, {
       'fullName': 'a b cuda',
       'faculty': 'z',
       'birthDate': '1995-11-15',
-      'age': '20 лет',
+      'age': '23',
       'studyYears': '2019-2023',
       'learnStart': 2018,
       'learnFinish': 2022,
-      'grade': '2 курс',
+      'grade': '4',
+    }, {
+      'fullName': 'a b cuda',
+      'faculty': 'y',
+      'birthDate': '1995-11-15',
+      'age': '23',
+      'studyYears': '2019-2023',
+      'learnStart': 2018,
+      'learnFinish': 2022,
+      'grade': '4',
+    }, {
+      'fullName': 'a b cuda',
+      'faculty': 'x',
+      'birthDate': '1995-11-15',
+      'age': '23',
+      'studyYears': '2019-2023',
+      'learnStart': 2020,
+      'learnFinish': 2024,
+      'grade': '2',
     }, {
       'fullName': 'zumba rumba rubada',
       'faculty': 'zabadee',
       'birthDate': '1995-11-15',
-      'age': '20 лет',
+      'age': '26',
       'studyYears': '2019-2023',
-      'learnStart': 2017,
-      'learnFinish': 2021,
-      'grade': '2 курс',
+      'learnStart': 2019,
+      'learnFinish': 2023,
+      'grade': '3',
     }];
   }
   // Функция сортировки по нескольким полям
@@ -386,39 +415,151 @@
         let controls = this.form;
         this.form.studentForm.addEventListener('submit', (e) => {
           e.preventDefault();
-          studentsData.push({
-            name: controls.nameInput.value,
-            surname: controls.surnameInput.value,
-            fathername: controls.fathernameInput.value,
-            faculty: controls.facultyInput.value,
-            birthDate: controls.birthDateInput.value,
-            learnStart: parseInt(controls.learnStartInput.value),
-            learnFinish: parseInt(controls.learnStartInput.value) + 4,
+          let newStudent = {
+            name: '',
+            surname: '',
+            fathername: '',
+            faculty: '',
+            birthDate: '',
+            learnStart: '',
+            learnFinish: '',
 
-            fullName: controls.nameInput.value + ' ' + controls.surnameInput.value + ' ' + controls.fathernameInput.value,
-            age: '20 лет',
-            studyYears: '2019-2023',
-            grade: '2 курс',
-          });
-          controls.nameInput.value = '';
-          controls.surnameInput.value = '';
-          controls.fathernameInput.value = '';
-          controls.facultyInput.value = '';
-          controls.birthDateInput.value = '';
-          controls.learnStartInput.value = '';
-          controls.learnStartInput.value = '';
-          appendDataRows(table.dataCellsDiv, table.sortsDiv, studentsData);
+            fullName: '',
+            age: '',
+            grade: '',
+          }
+          if (controls.nameInput.value.trim()){
+            newStudent.name = controls.nameInput.value.trim();
+            controls.nameSmall.textContent = '';
+            controls.nameSmall.classList.remove('text-danger');
+          } else {
+            controls.nameSmall.textContent = 'Введите имя';
+            controls.nameSmall.classList.add('text-danger');
+          }
+
+          if (controls.surnameInput.value.trim()){
+            newStudent.surname = controls.surnameInput.value.trim();
+            controls.surnameSmall.textContent = '';
+            controls.surnameSmall.classList.remove('text-danger');
+          } else {
+            controls.surnameSmall.textContent = 'Введите фамилию';
+            controls.surnameSmall.classList.add('text-danger');
+          }
+
+          if (controls.fathernameInput.value.trim()){
+            newStudent.fathername = controls.fathernameInput.value.trim();
+            controls.fathernameSmall.textContent = '';
+            controls.fathernameSmall.classList.remove('text-danger');
+          } else {
+            controls.fathernameSmall.textContent = 'Введите отчество';
+            controls.fathernameSmall.classList.add('text-danger');
+          }
+
+          if (newStudent.name && newStudent.surname && newStudent.fathername) {
+            newStudent.fullName = [newStudent.name,newStudent.surname,newStudent.fathername].join(' ');
+          }
+
+          if (controls.facultyInput.value.trim()){
+            newStudent.faculty = controls.facultyInput.value.trim();
+            controls.facultySmall.textContent = '';
+            controls.facultySmall.classList.remove('text-danger');
+          } else {
+            controls.facultySmall.textContent = 'Введите название факультета';
+            controls.facultySmall.classList.add('text-danger');
+          }
+
+          let learnStart = controls.learnStartInput.value.trim();
+          let currentYear = new Date().getFullYear();
+          if (learnStart &&
+               parseInt(learnStart) &&
+               (parseInt(learnStart) >= 2000 &&
+               parseInt(learnStart) < currentYear + 1)){
+            newStudent.learnStart = parseInt(learnStart.trim());
+            newStudent.learnFinish = newStudent.learnStart + 4;
+            controls.learnStartSmall.textContent = '';
+            controls.learnStartSmall.classList.remove('text-danger');
+          } else {
+            controls.learnStartSmall.textContent = 'Введите год начала обучения';
+            controls.learnStartSmall.classList.add('text-danger');
+          }
+
+          let birthDate = controls.birthDateInput.value ? new Date(controls.birthDateInput.value) : '';
+          let earliestDate = new Date('1900-01-01');
+          let latestDate = new Date();
+          if (birthDate &&
+              (birthDate >= earliestDate && birthDate < latestDate)) {
+            newStudent.birthDate = controls.birthDateInput.value;
+            let ageDifMs = Date.now() - new Date(newStudent.birthDate).getTime();
+            let ageDate = new Date(ageDifMs);
+            newStudent.age = Math.floor(Math.abs(ageDate.getUTCFullYear() - 1970));
+            if (newStudent.learnStart){
+              let timePassed = (new Date() - new Date(newStudent.learnStart, 8))/31536000000;
+              newStudent.grade = timePassed <= 4 ? Math.floor(timePassed) : 'finished';
+            }
+
+            controls.birthDateSmall.textContent = '';
+            controls.birthDateSmall.classList.remove('text-danger');
+          } else {
+            controls.birthDateSmall.textContent = 'Введите дату рождения';
+            controls.birthDateSmall.classList.add('text-danger');
+          }
+
+          let newStudentFilled = true;
+          for (let key of Object.keys(newStudent)) {
+            if (newStudent[key] === '') {
+              newStudentFilled = false;
+              break;
+            }
+          }
+          if (newStudentFilled) {
+            studentsData.push(newStudent);
+            controls.nameInput.value = '';
+            controls.surnameInput.value = '';
+            controls.fathernameInput.value = '';
+            controls.facultyInput.value = '';
+            controls.birthDateInput.value = '';
+            controls.learnStartInput.value = '';
+            controls.learnStartInput.value = '';
+            appendDataRows(table.dataCellsDiv, table.sortsDiv, studentsData);
+          }
         });
       }
     }
     formObject.configForm(studentsData);
 
+    let filterFields = [];
+    let filters = [];
+    let nameFilter = configFilter(table.filters.nameFilterInput, 'fullName');
+    let facultyFilter = configFilter(table.filters.facultyFilterInput, 'faculty');
+    let birthDateFilter = configFilter(table.filters.learnStartFilterInput, 'learnStart');
+    let learnStartFilter = configFilter(table.filters.learnFinishFilterInput, 'learnStart');
+    filters.push(nameFilter, facultyFilter, birthDateFilter, learnStartFilter);
+    filtersObject = {
+      elements: filters,
+      configElements: function () {
+        this.elements.forEach((currentValue, index, arr) => {
+          currentValue.element.addEventListener('input', (e) => {
+            currentValue.filterValue = currentValue.element.value;
+            filterFields = [];
+            arr.forEach((obj) => {
+              if (obj.filterValue) {
+                filterFields.push(obj);
+              }
+            });
+
+            appendDataRows(table.dataCellsDiv, table.sortsDiv, prepareDataForRender(studentsData, filterFields, sortFields));
+          });
+        });
+      }
+    }
+    filtersObject.configElements();
+
     let sortFields = [];
     const sorts = [];
     let nameSort = configSort(table.sorts.nameSortDiv, 'fullName');
     let facultySort = configSort(table.sorts.facultySortDiv, 'faculty');
-    let learnStartSort = configSort(table.sorts.learnStartSortDiv, 'learnStart', );
-    let learnFinishSort = configSort(table.sorts.learnFinishSortDiv, 'learnFinish');
+    let learnStartSort = configSort(table.sorts.birthDateSortDiv, 'birthDate');
+    let learnFinishSort = configSort(table.sorts.learnStartSortDiv, 'learnStart');
     sorts.push(nameSort, facultySort, learnStartSort, learnFinishSort);
     sortsObject = {
       elements: sorts,
@@ -447,55 +588,13 @@
                 sortFields.push(obj.sortState + obj.propName);
               }
             });
-            console.log(sortFields);
             appendDataRows(table.dataCellsDiv, table.sortsDiv, prepareDataForRender(studentsData, filterFields, sortFields));
-            // дописать функцию таким образом чтобы можно было в нее передавать
-            // массив с направлениями сортировок и и массив с фильтрами
-            // написать ф-ю обработки данных, которая будет сортировать и фильтровать данные и вызывать ее здесь
-            // appendFunction(dataCellsDiv, sortsDiv, studentsData);
           });
         });
       }
     }
     sortsObject.configElements(appendDataRows, table.dataCellsDiv, table.sortsDiv);
-
-    let filterFields = [];
-    let filters = [];
-    let nameFilter = configFilter(table.filters.nameFilterInput, 'fullName');
-    let facultyFilter = configFilter(table.filters.facultyFilterInput, 'faculty');
-    let birthDateFilter = configFilter(table.filters.birthDateFilterInput, 'birthDate');
-    let learnStartFilter = configFilter(table.filters.learnStartFilterInput, 'learnStart');
-    filters.push(nameFilter, facultyFilter, birthDateFilter, learnStartFilter);
-    filtersObject = {
-      elements: filters,
-      configElements: function () {
-        this.elements.forEach((currentValue, index, arr) => {
-          currentValue.element.addEventListener('input', (e) => {
-            currentValue.filterValue = currentValue.element.value;
-            filterFields = [];
-            arr.forEach((obj) => {
-              if (obj.filterValue) {
-                filterFields.push(obj);
-              }
-            });
-            console.log(filterFields);
-            // console.log(prepareDataForRender(filterFields, studentsData));
-
-            appendDataRows(table.dataCellsDiv, table.sortsDiv, prepareDataForRender(studentsData, filterFields, sortFields));
-          });
-        });
-      }
-    }
-    filtersObject.configElements();
-
   }
-
-  // Реализовать сортировку - сделано
-  // Написать функцию конфигурирования сортировщиков - сделано
-  // Написать функцию сортировки данных по данным с фильтров и сортировщиков, написать универсальный сортировщик для комбинации условий - сделано
-  // Написать обработку данных о студенте после ввода данных и между вставкой их в таблицу
-  // Разобраться как работать с датами
-  // Написать функцию валидации данных формы
 
   window.startApp = startApp;
 })();
