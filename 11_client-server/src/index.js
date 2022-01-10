@@ -22,11 +22,44 @@
 
   function createPagePostsList(postsList = []) {
     const pagePostsList = document.createElement('ul');
-    pagePostsList.classList.add('list-group', 'w-75', 'p-3', 'border', 'border-light');
+    pagePostsList.classList.add('list-group', 'w-75', 'p-3', 'border', 'border-light', 'mb-3');
     postsList.forEach((post, index, array) => {
       addPostToPostsList(post, pagePostsList);
     })
     return pagePostsList;
+  }
+
+  function createPagination(paginationData) {
+    const paginationDiv = document.createElement('div');
+    if (paginationData.page === 1) {
+      paginationDiv.classList.add('w-25', 'border', 'border-primary', 'p-3', 'd-flex', 'align-items-center', 'justify-content-center', 'rounded', 'mb-3');
+      const forwardLink = document.createElement('a');
+      forwardLink.textContent = 'Следующая страница'
+      forwardLink.href = './index.html?page=' + (paginationData.page + 1);
+      paginationDiv.append(forwardLink);
+    } else if (paginationData.page === paginationData.pages){
+      paginationDiv.classList.add('w-25', 'border', 'border-primary', 'p-3', 'd-flex', 'align-items-center', 'justify-content-center', 'rounded', 'mb-3');
+      const forwardLink = document.createElement('a');
+      forwardLink.textContent = 'Предыдущая страница'
+      forwardLink.href = './index.html?page=' + (paginationData.page - 1);
+      paginationDiv.append(forwardLink);
+    } else {
+      paginationDiv.classList.add('mw-50', 'border', 'border-primary', 'p-3', 'd-flex', 'align-items-center', 'justify-content-between', 'rounded', 'mb-3');
+      const forwardLink = document.createElement('a');
+      forwardLink.classList.add('d-flex', 'px-2');
+      forwardLink.textContent = 'Предыдущая страница'
+      if (paginationData.page - 1 === 1) {
+        forwardLink.href = './index.html';
+      } else {
+        forwardLink.href = './index.html?page=' + (paginationData.page - 1);
+      }
+      const backwardLink = document.createElement('a');
+      backwardLink.classList.add('d-flex', 'px-2');
+      backwardLink.textContent = 'Следующая страница'
+      backwardLink.href = './index.html?page=' + (paginationData.page + 1);
+      paginationDiv.append(forwardLink, backwardLink);
+    }
+    return paginationDiv;
   }
 
   function addPostToPostsList(post, postsList) {
@@ -50,8 +83,11 @@
 
     const postsList = await getPostsList(page || 1);
     const pagePostsList = createPagePostsList(postsList.data);
-    console.log(postsList.meta);
+    const pagination = createPagination(postsList.meta.pagination);
+    console.log(postsList);
+
     container.append(pagePostsList);
+    container.append(pagination);
   }
 
   window.startApp = startApp;
